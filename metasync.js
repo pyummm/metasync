@@ -4,23 +4,33 @@ const common = require('@metarhia/common');
 const nodeVerion = common.between(process.version, 'v', '.');
 
 const submodules = [
-  'composition', // Unified abstraction
-  'control', // Control flow utilities
-  'fp', // Async utils for functional programming
   'adapters', // Adapters to convert different async contracts
-  'throttle', // Throttling utilities
   'array', // Array utilities
-  'chain', // Process arrays sync and async array in chain
-  'collector', // DataCollector and KeyCollector
-  'queue', // Concurrent queue
-  'memoize', // Async memoization
+  'control', // Control flow utilities
   'do', // Simple chain/do
+  'fp', // Async utils for functional programming
   'poolify', // Create pool from factory
+  'throttle', // Throttling utilities
 ].map(path => require('./lib/' + path));
+
+// Process arrays sync and async array in chain
+const { forArrayChain } = require('./lib/chain.js');
+
+const { collect } = require('./lib/collector.js'); // DataCollector
+const { compose } = require('./lib/composition.js'); // Unified abstraction
+const { memoize } = require('./lib/memoize.js'); // Async memoization
+const { queue } = require('./lib/queue.js'); // Concurrent queue
 
 if (nodeVerion >= 10) {
   submodules.push(require('./lib/async-iterator'));
 }
 
-const { compose } = submodules[0];
-module.exports = Object.assign(compose, ...submodules);
+module.exports = Object.assign(
+  compose,
+  ...submodules,
+  { collect },
+  { compose },
+  { memoize },
+  { queue },
+  { for: forArrayChain }
+);

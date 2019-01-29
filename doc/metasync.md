@@ -138,6 +138,16 @@ Asynchronous map (iterate parallel)
 
 Asynchrous filter (iterate parallel)
 
+_Example:_
+```js
+
+metasync.filter(
+  ['data', 'to', 'filter'],
+  (item, callback) => callback(item.length > 2),
+  (err, result) => console.dir(result)
+);
+```
+
 
 #### reduce(items, fn, done, initial)
 
@@ -147,6 +157,8 @@ Asynchrous filter (iterate parallel)
   - `current`: `<any>` current element being processed in the array
   - `callback`: [`<Function>`] callback for returning value back to reduce
         function
+    - `err`: [`<Error>`]` | `[`<null>`]
+    - `data`: `<any>` resulting value
   - `counter`: [`<number>`] index of the current element being processed in
         array
   - `items`: [`<Array>`] the array reduce was called upon
@@ -157,6 +169,28 @@ Asynchrous filter (iterate parallel)
       iteration
 
 Asynchronous reduce
+
+
+#### reduceRight(items, fn, done, initial)
+
+- `items`: [`<Array>`] incoming
+- `fn`: [`<Function>`] to be executed for each value in array
+  - `previous`: `<any>` value previously returned in the last iteration
+  - `current`: `<any>` current element being processed in the array
+  - `callback`: [`<Function>`] callback for returning value back to reduce
+        function
+    - `err`: [`<Error>`]` | `[`<null>`]
+    - `data`: `<any>` resulting value
+  - `counter`: [`<number>`] index of the current element being processed in
+        array
+  - `items`: [`<Array>`] the array reduce was called upon
+- `done`: [`<Function>`] on done, optional
+  - `err`: [`<Error>`]` | `[`<null>`]
+  - `result`: [`<Array>`]
+- `initial`: `<any>` optional value to be used as first argument in first
+      iteration
+
+Asynchronous reduceRight
 
 
 #### each(items, fn, done)
@@ -172,6 +206,19 @@ Asynchronous reduce
 
 Asynchronous each (iterate in parallel)
 
+_Example:_
+```js
+
+metasync.each(
+  ['a', 'b', 'c'],
+  (item, callback) => {
+    console.dir({ each: item });
+    callback();
+  },
+  (err, data) => console.dir('each done')
+);
+```
+
 
 #### series(items, fn, done)
 
@@ -185,6 +232,21 @@ Asynchronous each (iterate in parallel)
   - `items`: [`<Array>`]
 
 Asynchronous series
+
+_Example:_
+```js
+
+metasync.series(
+  ['a', 'b', 'c'],
+  (item, callback) => {
+    console.dir({ series: item });
+    callback();
+  },
+  (err, data) => {
+    console.dir('series done');
+  }
+);
+```
 
 
 #### find(items, fn, done)
@@ -200,6 +262,20 @@ Asynchronous series
   - `result`: `<any>`
 
 Asynchronous find (iterate in series)
+
+_Example:_
+```js
+
+metasync.find(
+  [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+  (item, callback) => (
+    callback(null, item % 3 === 0 && item % 5 === 0)
+  ),
+  (err, result) => {
+    console.dir(result);
+  }
+);
+```
 
 
 #### every(items, fn, done)
@@ -482,36 +558,79 @@ Data collector
 Data collector
 
 
-#### Collector.prototype.collect()
+#### Collector.prototype.collect(key, err, value)
+
+- `key`: [`<string>`]
+- `err`: [`<Error>`]
+- `value`: `<any>`
+
+_Returns:_ [`<this>`]
+
+Pick or fail key
 
 
+#### Collector.prototype.pick(key, value)
 
-#### Collector.prototype.pick()
+- `key`: [`<string>`]
+- `value`: `<any>`
 
+_Returns:_ [`<this>`]
 
-
-#### Collector.prototype.fail()
-
-
-
-#### Collector.prototype.take()
+Pick key
 
 
+#### Collector.prototype.fail(key, err)
 
-#### Collector.prototype.timeout()
+- `key`: [`<string>`]
+- `err`: [`<Error>`]
+
+_Returns:_ [`<this>`]
+
+Fail key
 
 
+#### Collector.prototype.take(key, fn, args)
 
-#### Collector.prototype.done()
+- `key`: [`<string>`]
+- `fn`: [`<Function>`]
+- `args`: [`<Array>`] rest arguments, to be passed in fn
 
+_Returns:_ [`<this>`]
+
+Take method result
+
+
+#### Collector.prototype.timeout(msec)
+
+- `msec`: [`<number>`]
+
+_Returns:_ [`<this>`]
+
+Set timeout
+
+
+#### Collector.prototype.done(callback)
+
+- `callback`: [`<Function>`]
+  - `err`: [`<Error>`]
+  - `data`: `<any>`
+
+_Returns:_ [`<this>`]
+
+Set on done listener
 
 
 #### Collector.prototype.finalize()
 
 
 
-#### Collector.prototype.distinct()
+#### Collector.prototype.distinct(value)
 
+- `value`: [`<boolean>`]
+
+_Returns:_ [`<this>`]
+
+Deny or allow unlisted keys
 
 
 #### Collector.prototype.cancel()
@@ -531,6 +650,17 @@ Data collector
 _Returns:_ [`<Function>`] composed callback-last / err-first
 
 Asynchronous functions composition
+
+Array of functions gives sequential execution: `[f1, f2, f3]`
+Double brackets array of functions gives parallel execution: `[[f1, f2, f3]]`
+
+_Example:_
+```js
+
+const composed = metasync(
+  [f1, f2, f3, [[f4, f5, [f6, f7], f8]], f9]
+);
+```
 
 
 #### Composition()
@@ -568,21 +698,32 @@ Asynchronous functions composition
 #### Composition.prototype.clone()
 
 
+Clone composed
+
 
 #### Composition.prototype.pause()
 
+
+Pause execution
 
 
 #### Composition.prototype.resume()
 
 
+Resume execution
 
-#### Composition.prototype.timeout()
 
+#### Composition.prototype.timeout(msec)
+
+- `msec`: [`<number>`]
+
+Set timeout
 
 
 #### Composition.prototype.cancel()
 
+
+Cancel execution where possible
 
 
 ### Interface: control
@@ -603,6 +744,12 @@ Executes all asynchronous functions and pass first result to callback
 
 Parallel execution
 
+_Example:_
+```js
+
+metasync.parallel([f1, f2, f3], (err, data) => {});
+```
+
 
 #### sequential(fns, context, callback)
 
@@ -611,6 +758,12 @@ Parallel execution
 - `callback`: [`<Function>`] err-first on done
 
 Sequential execution
+
+_Example:_
+```js
+
+metasync.sequential([f1, f2, f3], (err, data) => {});
+```
 
 
 ### Interface: do

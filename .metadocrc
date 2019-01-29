@@ -1,0 +1,29 @@
+{
+  "headerFile": "doc/header.md",
+  "footerFile": "doc/footer.md",
+  "files": [
+    "lib/adapters.js",
+    "lib/array.js",
+    "lib/async-iterator.js",
+    "lib/chain.js",
+    "lib/collector.js",
+    "lib/composition.js",
+    "lib/control.js",
+    "lib/do.js",
+    "lib/fp.js",
+    "lib/memoize.js",
+    "lib/poolify.js",
+    "lib/queue.js",
+    "lib/throttle.js"
+  ],
+  "removeInterface": true,
+  "customLinks": {
+    "AsyncIterator": "https://github.com/metarhia/metasync/blob/master/lib/async-iterator.js",
+    "ArrayChain": "https://github.com/metarhia/metasync/blob/master/lib/chain.js",
+    "Collector": "https://github.com/metarhia/metasync/blob/master/lib/collector.js",
+    "Composition": "https://github.com/metarhia/metasync/blob/master/lib/composition.js",
+    "Memoized": "https://github.com/metarhia/metasync/blob/master/lib/memoize.js",
+    "Queue": "https://github.com/metarhia/metasync/blob/master/lib/queue.js"
+  },
+  "outputFile": "doc/metasync.md"
+}
