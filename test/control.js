@@ -89,7 +89,7 @@ metatests.test('runIf run asyncFn', test => {
   };
 
   metasync.runIf(condition, asyncFn, 'val1', 'val2', (err, result) => {
-    test.strictSame(err, null);
+    test.error(err);
     test.strictSame(result, { arg1: 'val1', arg2: 'val2' });
     test.end();
   });
@@ -104,7 +104,7 @@ metatests.test('runIf do not run asyncFn', test => {
   };
 
   metasync.runIf(condition, asyncFn, 'val1', 'val2', (err, result) => {
-    test.strictSame(err, null);
+    test.error(err);
     test.strictSame(result, undefined);
     test.end();
   });
@@ -119,7 +119,7 @@ metatests.test('runIf default value', test => {
   };
 
   metasync.runIf(condition, 'default', asyncFn, 'val', (err, result) => {
-    test.strictSame(err, null);
+    test.error(err);
     test.strictSame(result, 'default');
     test.end();
   });
