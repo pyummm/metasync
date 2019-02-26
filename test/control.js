@@ -79,3 +79,48 @@ metatests.test('sequential with error', test => {
     test.end();
   });
 });
+
+metatests.test('runIf run asyncFn', test => {
+  const condition = true;
+  const asyncFn = (arg1, arg2, cb) => {
+    process.nextTick(() => {
+      cb(null, { arg1, arg2 });
+    });
+  };
+
+  metasync.runIf(condition, asyncFn, 'val1', 'val2', (err, result) => {
+    test.strictSame(err, null);
+    test.strictSame(result, { arg1: 'val1', arg2: 'val2' });
+    test.end();
+  });
+});
+
+metatests.test('runIf do not run asyncFn', test => {
+  const condition = false;
+  const asyncFn = (arg1, arg2, cb) => {
+    process.nextTick(() => {
+      cb(null, { arg1, arg2 });
+    });
+  };
+
+  metasync.runIf(condition, asyncFn, 'val1', 'val2', (err, result) => {
+    test.strictSame(err, null);
+    test.strictSame(result, undefined);
+    test.end();
+  });
+});
+
+metatests.test('runIf default value', test => {
+  const condition = false;
+  const asyncFn = (val, cb) => {
+    process.nextTick(() => {
+      cb(null, val);
+    });
+  };
+
+  metasync.runIf(condition, 'default', asyncFn, 'val', (err, result) => {
+    test.strictSame(err, null);
+    test.strictSame(result, 'default');
+    test.end();
+  });
+});
