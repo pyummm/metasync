@@ -60,11 +60,53 @@ metatests.test('every with two-element arrays', test =>
   )
 );
 
-metatests.test('every', test => {
+metatests.test('every / array', test => {
   const data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
 
   const predicate = (item, callback) => {
     process.nextTick(() => callback(null, item > 0));
+  };
+
+  metasync.every(data, predicate, (err, result) => {
+    test.error(err);
+    test.strictSame(result, true);
+    test.end();
+  });
+});
+
+metatests.test('every / set', test => {
+  const data = new Set([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]);
+
+  const predicate = (item, callback) => {
+    process.nextTick(() => callback(null, item > 0));
+  };
+
+  metasync.every(data, predicate, (err, result) => {
+    test.error(err);
+    test.strictSame(result, true);
+    test.end();
+  });
+});
+
+metatests.test('every / map', test => {
+  const data = new Map([[1, 'a'], [2, 'b'], [3, 'c']]);
+
+  const predicate = (item, callback) => {
+    process.nextTick(() => callback(null, item[0] > 0));
+  };
+
+  metasync.every(data, predicate, (err, result) => {
+    test.error(err);
+    test.strictSame(result, true);
+    test.end();
+  });
+});
+
+metatests.test('every / string', test => {
+  const data = 'aaaaaaaaaaaa';
+
+  const predicate = (item, callback) => {
+    process.nextTick(() => callback(null, item === 'a'));
   };
 
   metasync.every(data, predicate, (err, result) => {

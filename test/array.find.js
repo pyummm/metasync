@@ -22,7 +22,7 @@ metatests.test('find with error', test => {
   });
 });
 
-metatests.test('find', test => {
+metatests.test('find / array', test => {
   const data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
   const expected = 15;
   const predicate = (item, callback) =>
@@ -35,9 +35,84 @@ metatests.test('find', test => {
   });
 });
 
-metatests.test('with empty array', test => {
+metatests.test('find / set', test => {
+  const data = new Set([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]);
+  const expected = 15;
+  const predicate = (item, callback) =>
+    process.nextTick(() => callback(null, item % 3 === 0 && item % 5 === 0));
+
+  metasync.find(data, predicate, (err, result) => {
+    test.error(err, 'must not return an error');
+    test.strictSame(result, expected, `result should be: ${expected}`);
+    test.end();
+  });
+});
+
+metatests.test('find / map', test => {
+  const data = new Map([[1, 'a'], [2, 'b'], [3, 'c']]);
+  const expected = 3;
+  const predicate = (item, callback) =>
+    process.nextTick(() => callback(null, item[0] % 3 === 0));
+
+  metasync.find(data, predicate, (err, result) => {
+    test.error(err, 'must not return an error');
+    test.strictSame(result[0], expected, `result should be: ${expected}`);
+    test.end();
+  });
+});
+
+metatests.test('find / string', test => {
+  const data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
+  const expected = 15;
+  const predicate = (item, callback) =>
+    process.nextTick(() => callback(null, item % 3 === 0 && item % 5 === 0));
+
+  metasync.find(data, predicate, (err, result) => {
+    test.error(err, 'must not return an error');
+    test.strictSame(result, expected, `result should be: ${expected}`);
+    test.end();
+  });
+});
+
+metatests.test('with empty / array', test => {
   metasync.find(
     [],
+    (el, callback) => process.nextTick(() => callback(null, true)),
+    (err, result) => {
+      test.error(err);
+      test.strictSame(result, undefined);
+      test.end();
+    }
+  );
+});
+
+metatests.test('with empty / set', test => {
+  metasync.find(
+    new Set(),
+    (el, callback) => process.nextTick(() => callback(null, true)),
+    (err, result) => {
+      test.error(err);
+      test.strictSame(result, undefined);
+      test.end();
+    }
+  );
+});
+
+metatests.test('with empty / map', test => {
+  metasync.find(
+    new Map(),
+    (el, callback) => process.nextTick(() => callback(null, true)),
+    (err, result) => {
+      test.error(err);
+      test.strictSame(result, undefined);
+      test.end();
+    }
+  );
+});
+
+metatests.test('with empty / string', test => {
+  metasync.find(
+    '',
     (el, callback) => process.nextTick(() => callback(null, true)),
     (err, result) => {
       test.error(err);

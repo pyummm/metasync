@@ -3,7 +3,7 @@
 const metasync = require('..');
 const metatests = require('metatests');
 
-metatests.test('reduceRight with initial', test => {
+metatests.test('reduceRight with initial / array', test => {
   const arr = [1, 2, 3, 4, 5];
   const initial = 10;
   const expectedRes = 25;
@@ -11,6 +11,58 @@ metatests.test('reduceRight with initial', test => {
   metasync.reduceRight(
     arr,
     (prev, cur, callback) => process.nextTick(() => callback(null, prev + cur)),
+    (err, res) => {
+      test.error(err);
+      test.strictSame(res, expectedRes);
+      test.end();
+    },
+    initial
+  );
+});
+
+metatests.test('reduce with initial / set', test => {
+  const set = new Set([1, 2, 3, 4, 5]);
+  const initial = 10;
+  const expectedRes = 25;
+
+  metasync.reduceRight(
+    set,
+    (prev, cur, callback) => process.nextTick(() => callback(null, prev + cur)),
+    (err, res) => {
+      test.error(err);
+      test.strictSame(res, expectedRes);
+      test.end();
+    },
+    initial
+  );
+});
+
+metatests.test('reduce with initial / map', test => {
+  const map = new Map([[1, 'a'], [2, 'b'], [3, 'c']]);
+  const initial = 10;
+  const expectedRes = '103,c2,b1,a';
+
+  metasync.reduceRight(
+    map,
+    (prev, cur, callback) => process.nextTick(() => callback(null, prev + cur)),
+    (err, res) => {
+      test.error(err);
+      test.strictSame(res, expectedRes);
+      test.end();
+    },
+    initial
+  );
+});
+
+metatests.test('reduce with initial / string', test => {
+  const str = '1111111111';
+  const expectedRes = 20;
+  const initial = 10;
+
+  metasync.reduceRight(
+    str,
+    (prev, cur, callback) =>
+      process.nextTick(() => callback(null, +prev + +cur)),
     (err, res) => {
       test.error(err);
       test.strictSame(res, expectedRes);

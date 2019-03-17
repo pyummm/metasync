@@ -3,7 +3,7 @@
 const metasync = require('..');
 const metatests = require('metatests');
 
-metatests.test('succesfull map', test => {
+metatests.test('succesfull map / array', test => {
   test.plan(2);
 
   const arr = [1, 2, 3];
@@ -15,6 +15,54 @@ metatests.test('succesfull map', test => {
     (err, newArr) => {
       test.error(err);
       test.strictSame(newArr, expectedArr);
+    }
+  );
+});
+
+metatests.test('succesfull map / set', test => {
+  test.plan(2);
+
+  const set = new Set([1, 2, 3]);
+  const expectedSet = new Set([2, 4, 6]);
+
+  metasync.asyncMap(
+    set,
+    item => item * 2,
+    (err, newArr) => {
+      test.error(err);
+      test.strictSame(newArr, expectedSet);
+    }
+  );
+});
+
+metatests.test('succesfull map / map', test => {
+  test.plan(2);
+
+  const map = new Map([[1, 'a'], [2, 'b'], [3, 'c']]);
+  const expectedMap = new Map([[1, 'a'], [4, 'b'], [9, 'c']]);
+
+  metasync.asyncMap(
+    map,
+    item => item[0] * 2,
+    (err, newArr) => {
+      test.error(err);
+      test.strictSame(newArr, expectedMap);
+    }
+  );
+});
+
+metatests.test('succesfull map / string', test => {
+  test.plan(2);
+
+  const string = 'abcdefgh';
+  const expectedStr = 'ABCDEFGH';
+
+  metasync.asyncMap(
+    string,
+    item => item.toUpperCase(),
+    (err, newArr) => {
+      test.error(err);
+      test.strictSame(newArr, expectedStr);
     }
   );
 });
